@@ -8,15 +8,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 # Debugging
-set(CMAKE_BUILD_TYPE RELWITHDEBINFO)
+set(CMAKE_BUILD_TYPE Release)
+message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Add dependencies
-find_package(SEAL 4.1 REQUIRED)
+find_package(SEAL 4.1 REQUIRED
+PATHS /Users/qixian/my_gits/nexus_lib
+NO_DEFAULT_PATH
+)
 
 # Nexus
 add_subdirectory(src/bootstrapping/common)
 add_subdirectory(src/bootstrapping)
+
+
+
+link_directories(/usr/local/lib)
+find_library(NTL_LIB ntl)
 
 add_executable(
     main
@@ -38,7 +47,7 @@ target_include_directories(main PUBLIC
     ${BOOTSTRAPPING_HEADER_DIR}
 )
 
-target_link_libraries(main PRIVATE ntl gmp m pthread SEAL::seal)
+target_link_libraries(main PRIVATE ${NTL_LIB} gmp m pthread SEAL::seal)
 
 # Nexus Bootstrapping
 add_executable(
@@ -56,5 +65,5 @@ target_include_directories(bootstrapping PUBLIC
     ${BOOTSTRAPPING_HEADER_DIR}
 )
 
-target_link_libraries(bootstrapping PRIVATE ntl gmp m pthread SEAL::seal)
+target_link_libraries(bootstrapping PRIVATE ${NTL_LIB} gmp m pthread SEAL::seal)
 
